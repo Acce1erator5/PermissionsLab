@@ -3,27 +3,24 @@ package uz.ttpu.permissionslab
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import uz.ttpu.permissionslab.ui.theme.PermissionsLabTheme
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            PermissionsLabTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            MaterialTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainScreenTabs()
                 }
             }
         }
@@ -31,17 +28,28 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun MainScreenTabs() {
+    var selectedTab by remember { mutableIntStateOf(0) }
+    val tabs = listOf("Network", "Camera", "Overlay", "Location")
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PermissionsLabTheme {
-        Greeting("Android")
+    Column(modifier = Modifier.fillMaxSize()) {
+        ScrollableTabRow(selectedTabIndex = selectedTab) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index },
+                    text = { Text(title) }
+                )
+            }
+        }
+        Column(modifier = Modifier.weight(1f).padding(16.dp)) {
+            when (selectedTab) {
+                0 -> NetworkScreen()
+                1 -> CameraScreen()
+                2 -> OverlayScreen()
+                3 -> LocationScreen()
+
+            }
+        }
     }
 }
